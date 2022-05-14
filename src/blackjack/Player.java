@@ -55,7 +55,7 @@ public class Player {
         sumCardValues();
     }
 
-    ArrayList<ArrayList<String>> renderCards(boolean isHidden) {
+    ArrayList<ArrayList<String>> renderCards(boolean isSecondCardHidden) {
         ArrayList<ArrayList<String>> renderedCards = new ArrayList<>();
 
         for (int i = 0; i < hand.size(); i++) {
@@ -71,7 +71,7 @@ public class Player {
                 case("club")  -> suitSymbol = "♣";
             }
 
-            if (i == 1 && isHidden) {
+            if (i == 1 && isSecondCardHidden) {
                 renderedCard.add("┌─────────┐");
                 renderedCard.add("│░░░░░░░░░│");
                 renderedCard.add("│░░░░░░░░░│");
@@ -108,8 +108,8 @@ public class Player {
         return renderedCards;
     }
 
-    public void renderHand(boolean isRound2) {
-        ArrayList<ArrayList<String>> hand = renderCards(isRound2);
+    public void renderHand(boolean isSecondCardHidden) {
+        ArrayList<ArrayList<String>> hand = renderCards(isSecondCardHidden);
         if (hand.size() == 2) {
             for (int i = 0 ; i < hand.get(0).size(); i++) {
                 System.out.printf("%s\t%s\n", hand.get(0).get(i), hand.get(1).get(i));
