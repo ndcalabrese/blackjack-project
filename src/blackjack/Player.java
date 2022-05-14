@@ -39,7 +39,7 @@ public class Player {
     }
 
     public void balanceToString() {
-        System.out.println("\nYour balance: " +  balance + " chips");
+        System.out.println("Your balance: " +  balance + " chips");
     }
 
     public void decreaseBalance (int amount) {

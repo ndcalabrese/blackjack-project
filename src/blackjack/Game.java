@@ -11,7 +11,7 @@ public class Game {
         Player dealer = new Player(true);
         Player user = new Player(false);
         user.setInitialBalance(500);
-        System.out.println("\n Welcome to");
+        System.out.println("\n\t\t   W  E  L  C  O  M  E       T  O");
         System.out.println("""
                  _      _               _       _               _   \s
                 | |    | |             | |     (_)             | |  \s
@@ -28,70 +28,70 @@ public class Game {
 
     }
     public static void playRound(Player dealer, Player user) {
-        Deck deck = new Deck();
-        deck.shuffleDeck();
+//        while (true) {
+            Deck deck = new Deck();
+            deck.shuffleDeck();
 
-        int potAmount = 0;
-        int betAmount;
+            int potAmount = 0;
+            int betAmount;
+            boolean isStanding = false;
 
-        displayBalances(potAmount, user);
+            displayBalances(potAmount, user);
 
-        betAmount = getBet(user);
-        potAmount += betAmount;
+            betAmount = getBet(user);
+            potAmount += betAmount;
 
-        user.decreaseBalance(betAmount);
-        displayBalances(potAmount, user);
+            user.decreaseBalance(betAmount);
+            displayBalances(potAmount, user);
 
-        // Round 1
-        // Deal two cards to dealer and player, and display them
-        dealHand(deck, dealer, user);
+            // Deal two cards to dealer and player, and display them
+            dealHand(deck, dealer, user);
+            if (checkScores(dealer, user, potAmount, isStanding)) {
+                return;
+            }
+            // User decides to hit or stand
+            boolean isFirstHit = true;
 
-        // User decides to hit or stand
-        boolean isSecondRound = true;
-        while (true) {
-            // Array of booleans, willHit, and willDoubleDown
-            boolean[] userChoices = userHitOrStand(user, isSecondRound,
-                    potAmount, betAmount);
-            // Player hits
-            if (userChoices[0]) {
-                if (userChoices[1]) {
-                        potAmount += betAmount;
-                        user.decreaseBalance(betAmount);
-                        displayBalances(potAmount, user);
-                        isSecondRound = false;
-                        user.drawCard(deck.drawCard());
-                        System.out.println("\nDEALER'S HAND: " +
-                            (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
-                        dealer.renderHand(true);
-                        System.out.println("\nYOUR HAND: " + user.getHandTotal());
-                        user.renderHand(false);
-
-                // Player does not double down
-                } else {
-                    isSecondRound = false;
+            while (true) {
+                // Array of booleans, willHit, and willDoubleDown
+                boolean[] userChoices = userHitOrStand(user, isFirstHit,
+                        betAmount);
+                // Player hits
+                if (userChoices[0]) {
+                    if (userChoices[1]) {
+                            potAmount += betAmount;
+                            user.decreaseBalance(betAmount);
+                            displayBalances(potAmount, user);
+                        // Player does not double down
+                    }
+                    isFirstHit = false;
                     user.drawCard(deck.drawCard());
                     System.out.println("\nDEALER'S HAND: " +
-                            (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
+                        (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
                     dealer.renderHand(true);
                     System.out.println("\nYOUR HAND: " + user.getHandTotal());
                     user.renderHand(false);
+                // Player stands
+                } else {
+                    isStanding = true;
+                    dealerHitOrStand(deck, dealer);
+                    System.out.println("\nDEALER'S HAND: " +
+                            dealer.getHandTotal());
+                    dealer.renderHand(false);
+                    System.out.println("\nYOUR HAND: " + user.getHandTotal());
+                    user.renderHand(false);
+                    break;
                 }
-            // Player stands
-            } else {
-                dealerHitOrStand(deck, dealer);
-                System.out.println("\nDEALER'S HAND: " +
-                        dealer.getHandTotal());
-                dealer.renderHand(false);
-                System.out.println("\nYOUR HAND: " + user.getHandTotal());
-                user.renderHand(false);
-                break;
             }
+        if (checkScores(dealer, user, potAmount, isStanding)) {
+                break;
         }
+//        }
 
     }
 
     public static void displayBalances(int potAmount, Player user) {
-        System.out.println("Current pot: " + potAmount + " chips");
+        System.out.println("\nCurrent pot: " + potAmount + " chips");
         user.balanceToString();
     }
 
@@ -100,9 +100,27 @@ public class Game {
         dealer.drawCard(deck.drawCard());
         user.drawCard(deck.drawCard());
         dealer.drawCard(deck.drawCard());
-        System.out.println("\nDEALER'S HAND: " +
-                (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
-        dealer.renderHand(true);
+        // If dealer's first card is a 10, face card, or ace,
+        // show both cards
+        switch (dealer.getCardValue(0)) {
+            case "10":
+            case "J":
+            case "Q":
+            case "K":
+            case "A": {
+                System.out.println("\nDEALER'S HAND: " +
+                        (dealer.getHandTotal()));
+                dealer.renderHand(false);
+                break;
+            }
+            default: {
+                System.out.println("\nDEALER'S HAND: " +
+                        (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
+                dealer.renderHand(true);
+                break;
+            }
+        }
+
         System.out.println("\nYOUR HAND: " + user.getHandTotal());
         user.renderHand(false);
     }
@@ -129,8 +147,29 @@ public class Game {
         return bet;
     }
 
-    public static boolean[] userHitOrStand(Player user, boolean isSecondRound,
-                                           int potAmount, int betAmount) {
+    // Returns true if game has ended.
+    public static boolean checkScores(Player dealer, Player user, int potAmount, boolean isStanding) {
+        boolean isRoundOver = false;
+        // Both dealer and user have blackjack
+        if (dealer.getHandTotal() == 21 && user.getHandTotal() == 21) {
+            System.out.println("\nPush.");
+            user.addToBalance(potAmount);
+            isRoundOver = true;
+        // Dealer busts
+        } else if (dealer.getHandTotal() > 21 && user.getHandTotal() <= 21) {
+            System.out.println("\nDealer busts. You win " + (potAmount * 2) +
+                    " chips!");
+            user.addToBalance(potAmount * 2);
+            isRoundOver = true;
+        // User busts
+        } else if (dealer.getHandTotal() <= 21 && user.getHandTotal() > 21) {
+            System.out.println("Bust! Dealer wins.");
+            isRoundOver = true;
+        } if (dealer.getHandTotal()
+    }
+
+    public static boolean[] userHitOrStand(Player user, boolean isFirstHit,
+                                           int betAmount) {
         boolean willHit = false;
         boolean willDoubleDown = false;
         int userChoiceHitOrStand;
@@ -138,12 +177,13 @@ public class Game {
             System.out.println("""
                 1 - Hit
                 2 - Stand""");
+            System.out.print("Your response: ");
             String userInputHitOrStand = getUserInput();
             if (isNumeric(userInputHitOrStand)) {
                 userChoiceHitOrStand = Integer.parseInt(userInputHitOrStand);
                 if (userChoiceHitOrStand == 1) {
                     willHit = true;
-                    if (isSecondRound && (user.getCurrentBalance() >= (betAmount * 2))) {
+                    if (isFirstHit && (user.getCurrentBalance() >= (betAmount * 2))) {
                         while (true) {
                             System.out.print("Double down? Y/N: ");
                             String userInputDoubleDown = getUserInput();
@@ -157,6 +197,7 @@ public class Game {
                             }
                         }
                     }
+                    break;
                 } else if (userChoiceHitOrStand == 2) {
                     break;
                 } else {
@@ -166,7 +207,6 @@ public class Game {
                 System.out.println("\nInvalid input.");
             }
         }
-
         return new boolean[] { willHit, willDoubleDown };
     }
 
