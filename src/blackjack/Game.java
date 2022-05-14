@@ -11,7 +11,17 @@ public class Game {
         Player dealer = new Player(true);
         Player user = new Player(false);
         user.setInitialBalance(500);
-        System.out.println("\n Welcome to Blackjack!");
+        System.out.println("\n Welcome to");
+        System.out.println("""
+                 _      _               _       _               _   \s
+                | |    | |             | |     (_)             | |  \s
+                | |__  | |  __ _   ___ | | __   _   __ _   ___ | | __
+                | '_ \\ | | / _` | / __|| |/ /  | | / _` | / __|| |/ /
+                | |_) || || (_| || (__ |   <   | || (_| || (__ |   <\s
+                |_.__/ |_| \\__,_| \\___||_|\\_\\  | | \\__,_| \\___||_|\\_\\
+                                              _/ |                  \s
+                                             |__/                   \s
+                """);
         while (user.getCurrentBalance() > 0) {
             playRound(dealer, user);
         }
@@ -22,7 +32,7 @@ public class Game {
         deck.shuffleDeck();
 
         int potAmount = 0;
-        int betAmount = 0;
+        int betAmount;
 
         displayBalances(potAmount, user);
 
@@ -40,26 +50,40 @@ public class Game {
         boolean isSecondRound = true;
         while (true) {
             // Array of booleans, willHit, and willDoubleDown
-            boolean[] userChoices = userHitOrStand(deck, user, isSecondRound);
+            boolean[] userChoices = userHitOrStand(user, isSecondRound,
+                    potAmount, betAmount);
             // Player hits
             if (userChoices[0]) {
-                // Player doubles down
                 if (userChoices[1]) {
-                    potAmount += betAmount;
-                    user.decreaseBalance(betAmount);
-                    displayBalances(potAmount, user);
-                    isSecondRound = false;
-                    user.drawCard(hit(deck, user));
-                    break;
+                        potAmount += betAmount;
+                        user.decreaseBalance(betAmount);
+                        displayBalances(potAmount, user);
+                        isSecondRound = false;
+                        user.drawCard(deck.drawCard());
+                        System.out.println("\nDEALER'S HAND: " +
+                            (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
+                        dealer.renderHand(true);
+                        System.out.println("\nYOUR HAND: " + user.getHandTotal());
+                        user.renderHand(false);
+
                 // Player does not double down
                 } else {
                     isSecondRound = false;
-                    user.drawCard(hit(deck, user));
+                    user.drawCard(deck.drawCard());
+                    System.out.println("\nDEALER'S HAND: " +
+                            (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
+                    dealer.renderHand(true);
+                    System.out.println("\nYOUR HAND: " + user.getHandTotal());
+                    user.renderHand(false);
                 }
             // Player stands
             } else {
-                isSecondRound = false;
-                dealerHitOrStand(deck, dealer, false);
+                dealerHitOrStand(deck, dealer);
+                System.out.println("\nDEALER'S HAND: " +
+                        dealer.getHandTotal());
+                dealer.renderHand(false);
+                System.out.println("\nYOUR HAND: " + user.getHandTotal());
+                user.renderHand(false);
                 break;
             }
         }
@@ -105,7 +129,8 @@ public class Game {
         return bet;
     }
 
-    public static boolean[] userHitOrStand(Deck deck, Player player, boolean isSecondRound) {
+    public static boolean[] userHitOrStand(Player user, boolean isSecondRound,
+                                           int potAmount, int betAmount) {
         boolean willHit = false;
         boolean willDoubleDown = false;
         int userChoiceHitOrStand;
@@ -118,7 +143,7 @@ public class Game {
                 userChoiceHitOrStand = Integer.parseInt(userInputHitOrStand);
                 if (userChoiceHitOrStand == 1) {
                     willHit = true;
-                    if (isSecondRound) {
+                    if (isSecondRound && (user.getCurrentBalance() >= (betAmount * 2))) {
                         while (true) {
                             System.out.print("Double down? Y/N: ");
                             String userInputDoubleDown = getUserInput();
@@ -145,7 +170,7 @@ public class Game {
         return new boolean[] { willHit, willDoubleDown };
     }
 
-    public static void hit(Deck deck, Player player) {
+    public static void dealerHitOrStand (Deck deck, Player dealer) {
 
     }
 
