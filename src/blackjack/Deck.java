@@ -12,7 +12,7 @@ public class Deck {
     public Deck() {
         deck = new ArrayList<>();
         String[] suits = { "spade", "diamond", "heart", "club" };
-        String[] values = { "1", "2", "3", "4", "5", "6", "7",
+        String[] values = {"2", "3", "4", "5", "6", "7",
                 "8", "9", "10", "J", "Q", "K", "A" };
         for (String suit : suits) {
             for (String value : values) {

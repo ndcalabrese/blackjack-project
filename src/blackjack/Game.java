@@ -1,13 +1,14 @@
 package blackjack;
 
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         playGame();
     }
 
-    public static void playGame() {
+    public static void playGame() throws InterruptedException {
         Player dealer = new Player(true);
         Player user = new Player(false);
         user.setInitialBalance(500);
@@ -22,71 +23,76 @@ public class Game {
                                               _/ |                  \s
                                              |__/                   \s
                 """);
+
         while (user.getCurrentBalance() > 0) {
             playRound(dealer, user);
         }
 
+        System.out.println("\nNo more chips left! Thanks for playing!");
+
     }
-    public static void playRound(Player dealer, Player user) {
-//        while (true) {
-            Deck deck = new Deck();
-            deck.shuffleDeck();
+    public static void playRound(Player dealer, Player user) throws InterruptedException {
 
-            int potAmount = 0;
-            int betAmount;
-            boolean isStanding = false;
+        Deck deck = new Deck();
+        deck.shuffleDeck();
+        System.out.print("\nShuffling deck");
 
-            displayBalances(potAmount, user);
+        for (int i = 0; i < 3; i++) {
+            System.out.print(" .");
+            TimeUnit.SECONDS.sleep(1);
+        }
+        System.out.println("\n");
 
-            betAmount = getBet(user);
-            potAmount += betAmount;
+        int potAmount = 0;
+        int betAmount;
 
-            user.decreaseBalance(betAmount);
-            displayBalances(potAmount, user);
+        displayBalances(potAmount, user);
 
-            // Deal two cards to dealer and player, and display them
-            dealHand(deck, dealer, user);
-            if (checkScores(dealer, user, potAmount, isStanding)) {
-                return;
-            }
-            // User decides to hit or stand
-            boolean isFirstHit = true;
+        betAmount = getBet(user);
+        potAmount += betAmount;
 
-            while (true) {
-                // Array of booleans, willHit, and willDoubleDown
-                boolean[] userChoices = userHitOrStand(user, isFirstHit,
-                        betAmount);
-                // Player hits
-                if (userChoices[0]) {
-                    if (userChoices[1]) {
-                            potAmount += betAmount;
-                            user.decreaseBalance(betAmount);
-                            displayBalances(potAmount, user);
-                        // Player does not double down
-                    }
-                    isFirstHit = false;
-                    user.drawCard(deck.drawCard());
-                    System.out.println("\nDEALER'S HAND: " +
-                        (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
-                    dealer.renderHand(true);
-                    System.out.println("\nYOUR HAND: " + user.getHandTotal());
-                    user.renderHand(false);
-                // Player stands
-                } else {
-                    isStanding = true;
-                    dealerHitOrStand(deck, dealer);
-                    System.out.println("\nDEALER'S HAND: " +
-                            dealer.getHandTotal());
-                    dealer.renderHand(false);
-                    System.out.println("\nYOUR HAND: " + user.getHandTotal());
-                    user.renderHand(false);
+        user.subtractFromBalance(betAmount);
+        displayBalances(potAmount, user);
+
+        // Deal two cards to dealer and player, and display them
+        dealHand(deck, dealer, user);
+        if (checkScores(dealer, user, potAmount, false)) {
+            return;
+        }
+
+        // User decides to hit or stand
+        boolean isFirstHit = true;
+
+        while (true) {
+            // Array of booleans: willHit and willDoubleDown
+            boolean[] userChoices = userHitOrStand(user, isFirstHit,
+                    betAmount);
+            // Player hits
+            if (userChoices[0]) {
+                if (userChoices[1]) {
+                        potAmount += betAmount;
+                        user.subtractFromBalance(betAmount);
+                        displayBalances(potAmount, user);
+                    // Player does not double down
+                }
+                isFirstHit = false;
+                user.drawCard(deck.drawCard());
+                dealer.renderHand(false);
+                user.renderHand(false);
+                if (checkScores(dealer, user, potAmount, false)) {
+                    break;
+                }
+            // Player stands
+            } else {
+                dealerHitOrStand(deck, dealer);
+                dealer.renderHand(true);
+                user.renderHand(true);
+                if (checkScores(dealer, user, potAmount, true)) {
                     break;
                 }
             }
-        if (checkScores(dealer, user, potAmount, isStanding)) {
-                break;
         }
-//        }
+
 
     }
 
@@ -96,33 +102,32 @@ public class Game {
     }
 
     public static void dealHand(Deck deck, Player dealer, Player user) {
+        user.clearHand();
+        dealer.clearHand();
         user.drawCard(deck.drawCard());
         dealer.drawCard(deck.drawCard());
         user.drawCard(deck.drawCard());
         dealer.drawCard(deck.drawCard());
-        // If dealer's first card is a 10, face card, or ace,
-        // show both cards
-        switch (dealer.getCardValue(0)) {
-            case "10":
-            case "J":
-            case "Q":
-            case "K":
-            case "A": {
-                System.out.println("\nDEALER'S HAND: " +
-                        (dealer.getHandTotal()));
-                dealer.renderHand(false);
-                break;
-            }
-            default: {
-                System.out.println("\nDEALER'S HAND: " +
-                        (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
-                dealer.renderHand(true);
-                break;
-            }
-        }
-
-        System.out.println("\nYOUR HAND: " + user.getHandTotal());
+        dealer.renderHand(false);
         user.renderHand(false);
+//        switch (dealer.getCardValue(0)) {
+//            case "10":
+//            case "J":
+//            case "Q":
+//            case "K":
+//            case "A": {
+//                System.out.println("\nDEALER'S HAND: " +
+//                        (dealer.getHandTotal()));
+//                dealer.renderHand(false);
+//                break;
+//            }
+//            default: {
+//                System.out.println("\nDEALER'S HAND: " +
+//                        (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
+//                dealer.renderHand(true);
+//                break;
+//            }
+//        }
     }
 
     public static int getBet(Player user) {
@@ -133,7 +138,7 @@ public class Game {
             if (isNumeric(userInput)) {
                 bet = Integer.parseInt(userInput);
                 if (bet == 0) {
-                    System.out.println("You cashed out with " + user.getCurrentBalance() + " chips. Goodbye!");
+                    System.out.println("\nYou cashed out with " + user.getCurrentBalance() + " chips. Goodbye!");
                 } else if (bet % 5 == 0 && bet <= user.getCurrentBalance()) {
                     break;
                 } else {
@@ -155,6 +160,16 @@ public class Game {
             System.out.println("\nPush.");
             user.addToBalance(potAmount);
             isRoundOver = true;
+        // Dealer has blackjack
+        } else if (dealer.getHandTotal() == 21) {
+            System.out.println("\nDealer got blackjack. Dealer wins");
+            isRoundOver = true;
+        // User has blackjack
+        } else if (user.getHandTotal() == 21) {
+            System.out.println("\nYou got blackjack! You win " + (potAmount * 2) +
+                    " chips!");
+            user.addToBalance(potAmount * 2);
+            isRoundOver = true;
         // Dealer busts
         } else if (dealer.getHandTotal() > 21 && user.getHandTotal() <= 21) {
             System.out.println("\nDealer busts. You win " + (potAmount * 2) +
@@ -163,9 +178,24 @@ public class Game {
             isRoundOver = true;
         // User busts
         } else if (dealer.getHandTotal() <= 21 && user.getHandTotal() > 21) {
-            System.out.println("Bust! Dealer wins.");
+            System.out.println("\nBust! Dealer wins.");
             isRoundOver = true;
-        } if (dealer.getHandTotal()
+        } else if (dealer.getHandTotal() < 21 && user.getHandTotal() < 21 && isStanding) {
+            if (dealer.getHandTotal() > user.getHandTotal()) {
+                System.out.println("\nDealer wins.");
+                isRoundOver = true;
+            } else if (dealer.getHandTotal() < user.getHandTotal()) {
+                System.out.println("\nYou win " + (potAmount * 2) +
+                        " chips!");
+                user.addToBalance(potAmount * 2);
+                isRoundOver = true;
+            } else if (dealer.getHandTotal() == user.getHandTotal()) {
+                System.out.println("Push.");
+                user.addToBalance(potAmount);
+                isRoundOver = true;
+            }
+        }
+        return isRoundOver;
     }
 
     public static boolean[] userHitOrStand(Player user, boolean isFirstHit,
@@ -211,7 +241,9 @@ public class Game {
     }
 
     public static void dealerHitOrStand (Deck deck, Player dealer) {
-
+        while (dealer.getHandTotal() < 17) {
+            dealer.drawCard(deck.drawCard());
+        }
     }
 
     public static String getUserInput() {

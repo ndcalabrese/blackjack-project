@@ -42,14 +42,6 @@ public class Player {
         System.out.println("Your balance: " +  balance + " chips");
     }
 
-    public void decreaseBalance (int amount) {
-        balance -= amount;
-    }
-
-    public void increaseBalance (int amount) {
-        balance += amount;
-    }
-
     public void drawCard(Card card) {
         hand.add(card);
         sumCardValues();
@@ -102,8 +94,44 @@ public class Player {
         return renderedCards;
     }
 
-    public void renderHand(boolean isSecondCardHidden) {
-        ArrayList<ArrayList<String>> renderedCards = renderCards(isSecondCardHidden);
+    public void renderHand(boolean isUserStanding) {
+        ArrayList<ArrayList<String>> renderedCards;
+        // If dealer's first card is a 10, face card, or ace,
+        // show both cards
+        if (isDealer) {
+            switch (getCardValue(0)) {
+                case "10":
+                case "J":
+                case "Q":
+                case "K":
+                case "A": {
+                    System.out.println("\nDEALER'S HAND: " +
+                            (getHandTotal()));
+                    renderedCards = renderCards(false);
+                    break;
+                }
+                default: {
+                    // Reveal hidden card if player is standing
+                    if (isUserStanding) {
+                        System.out.println("\nDEALER'S HAND: " +
+                                (getHandTotal()));
+                        renderedCards = renderCards(false);
+                    // Keep second card hidden if player is not standing
+                    } else {
+                        System.out.println("\nDEALER'S HAND: " +
+                                (getHandTotal() - convertCardValueString(getCardValue(1))));
+                        renderedCards = renderCards(true);
+                    }
+                    break;
+                }
+            }
+        } else {
+            System.out.println("\nYOUR HAND: " + getHandTotal());
+            renderedCards = renderCards(false);
+        }
+
+
+
         if (hand.size() == 2) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
                 System.out.printf("%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i));
@@ -165,6 +193,10 @@ public class Player {
                         renderedCards.get(10).get(i));
             }
         }
+    }
+
+    public void clearHand() {
+        hand = new ArrayList<>();
     }
 
     public void sumCardValues() {

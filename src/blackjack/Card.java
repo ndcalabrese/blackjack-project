@@ -34,7 +34,7 @@ public class Card {
     }
 
     public String getRandomValue() {
-        String[] values = { "1", "2", "3", "4", "5", "6", "7",
+        String[] values = { "2", "3", "4", "5", "6", "7",
             "8", "9", "10", "J", "Q", "K", "A" };
 
         return values[randomValues.nextInt(values.length)];
