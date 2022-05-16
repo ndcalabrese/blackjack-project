@@ -69,18 +69,27 @@ public class Game {
                     betAmount);
             // Player hits
             if (userChoices[0]) {
+                // Player doubles down
                 if (userChoices[1]) {
-                        potAmount += betAmount;
-                        user.subtractFromBalance(betAmount);
-                        displayBalances(potAmount, user);
-                    // Player does not double down
-                }
-                isFirstHit = false;
-                user.drawCard(deck.drawCard());
-                dealer.renderHand(false);
-                user.renderHand(false);
-                if (checkScores(dealer, user, potAmount, false)) {
-                    break;
+                    potAmount += betAmount;
+                    user.subtractFromBalance(betAmount);
+                    displayBalances(potAmount, user);
+                    isFirstHit = false;
+                    user.drawCard(deck.drawCard());
+                    dealerHitOrStand(deck, dealer);
+                    dealer.renderHand(true);
+                    user.renderHand(true);
+                    if (checkScores(dealer, user, potAmount, true)) {
+                        break;
+                    }
+                } else {
+                    isFirstHit = false;
+                    user.drawCard(deck.drawCard());
+                    dealer.renderHand(user.getHandTotal() >= 21);
+                    user.renderHand(false);
+                    if (checkScores(dealer, user, potAmount, false)) {
+                        break;
+                    }
                 }
             // Player stands
             } else {
@@ -108,26 +117,10 @@ public class Game {
         dealer.drawCard(deck.drawCard());
         user.drawCard(deck.drawCard());
         dealer.drawCard(deck.drawCard());
+        // If dealer has natural blackjack, user stands
+//        dealer.renderHand(dealer.getHandTotal() == 21);
         dealer.renderHand(false);
         user.renderHand(false);
-//        switch (dealer.getCardValue(0)) {
-//            case "10":
-//            case "J":
-//            case "Q":
-//            case "K":
-//            case "A": {
-//                System.out.println("\nDEALER'S HAND: " +
-//                        (dealer.getHandTotal()));
-//                dealer.renderHand(false);
-//                break;
-//            }
-//            default: {
-//                System.out.println("\nDEALER'S HAND: " +
-//                        (dealer.getHandTotal() - dealer.convertCardValueString(dealer.getCardValue(1))));
-//                dealer.renderHand(true);
-//                break;
-//            }
-//        }
     }
 
     public static int getBet(Player user) {
@@ -155,18 +148,36 @@ public class Game {
     // Returns true if game has ended.
     public static boolean checkScores(Player dealer, Player user, int potAmount, boolean isStanding) {
         boolean isRoundOver = false;
-        // Both dealer and user have blackjack
-        if (dealer.getHandTotal() == 21 && user.getHandTotal() == 21) {
+        // Both dealer and user have natural blackjack
+        if (dealer.getHandTotal() == 21 && user.getHandTotal() == 21
+                && dealer.getHandSize() == 2 && user.getHandSize() == 2) {
             System.out.println("\nPush.");
             user.addToBalance(potAmount);
             isRoundOver = true;
-        // Dealer has blackjack
-        } else if (dealer.getHandTotal() == 21) {
+        // Dealer gets natural blackjack and user doesn't
+        } else if (dealer.getHandTotal() == 21 && dealer.getHandSize() == 2) {
             System.out.println("\nDealer got blackjack. Dealer wins");
             isRoundOver = true;
-        // User has blackjack
+        // User gets natural blackjack and dealer doesn't
+        // Blackjack pays 3:2
+        } else if (user.getHandTotal() == 21 && user.getHandSize() == 2) {
+            int userWinnings = (int)Math.round(potAmount * 2.5);
+            System.out.println("\nYou got blackjack! You win " + userWinnings +
+                    " chips!");
+            user.addToBalance(userWinnings);
+            isRoundOver = true;
+        // Both dealer and user reach 21
+        } else if (dealer.getHandTotal() == 21 && user.getHandTotal() == 21) {
+            System.out.println("\nPush.");
+            user.addToBalance(potAmount);
+            isRoundOver = true;
+        // Dealer reaches 21 and user does not
+        } else if (dealer.getHandTotal() == 21) {
+            System.out.println("\nDealer got 21. Dealer wins");
+            isRoundOver = true;
+        // User reaches 21 and user does not.
         } else if (user.getHandTotal() == 21) {
-            System.out.println("\nYou got blackjack! You win " + (potAmount * 2) +
+            System.out.println("\nYou got 21! You win " + (potAmount * 2) +
                     " chips!");
             user.addToBalance(potAmount * 2);
             isRoundOver = true;
@@ -180,15 +191,19 @@ public class Game {
         } else if (dealer.getHandTotal() <= 21 && user.getHandTotal() > 21) {
             System.out.println("\nBust! Dealer wins.");
             isRoundOver = true;
+        // User stands and dealer stops hitting
         } else if (dealer.getHandTotal() < 21 && user.getHandTotal() < 21 && isStanding) {
+            // Dealer has a higher hand value
             if (dealer.getHandTotal() > user.getHandTotal()) {
                 System.out.println("\nDealer wins.");
                 isRoundOver = true;
+            // User has a higher hand value
             } else if (dealer.getHandTotal() < user.getHandTotal()) {
                 System.out.println("\nYou win " + (potAmount * 2) +
                         " chips!");
                 user.addToBalance(potAmount * 2);
                 isRoundOver = true;
+            // Both dealer and user have equal hand value
             } else if (dealer.getHandTotal() == user.getHandTotal()) {
                 System.out.println("Push.");
                 user.addToBalance(potAmount);

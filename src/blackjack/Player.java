@@ -18,9 +18,9 @@ public class Player {
         this.balance = initialBalance;
     }
 
-    public boolean getIsDealer() {
-        return this.isDealer;
-    }
+//    public boolean getIsDealer() {
+//        return this.isDealer;
+//    }
 
     public int getCurrentBalance() {
         return this.balance;
@@ -30,12 +30,16 @@ public class Player {
         return this.hand.get(card).getValue();
     }
 
-    public ArrayList<Card> getHand() {
-        return this.hand;
-    }
+//    public ArrayList<Card> getHand() {
+//        return this.hand;
+//    }
 
     public int getHandTotal() {
         return this.handTotal;
+    }
+
+    public int getHandSize() {
+        return this.hand.size();
     }
 
     public void balanceToString() {
@@ -49,19 +53,36 @@ public class Player {
 
     ArrayList<ArrayList<String>> renderCards(boolean isSecondCardHidden) {
         ArrayList<ArrayList<String>> renderedCards = new ArrayList<>();
+        String ANSI_RED = "\u001B[31m";
+        String ANSI_BLACK = "\u001B[30m";
+        String ANSI_WHITE_BG = "\u001B[47m";
+        String ANSI_RESET = "\u001B[0m";
 
         for (int i = 0; i < hand.size(); i++) {
             Card card = hand.get(i);
             ArrayList<String> renderedCard = new ArrayList<>();
             String suitSymbol = null;
-            String cardValue = card.getValue();
+            String cardValue = null;
 
             switch (card.getSuit()) {
-                case("spade")  -> suitSymbol = "♠";
-                case("diamond")  -> suitSymbol = "♦";
-                case("heart")  -> suitSymbol = "♥";
-                case("club")  -> suitSymbol = "♣";
+                case("spade")  -> {
+                    suitSymbol = ANSI_BLACK + "♠" + ANSI_RESET;
+                    cardValue = ANSI_BLACK + card.getValue() + ANSI_RESET;
+                }
+                case("diamond")  -> {
+                    suitSymbol = ANSI_RED + "♦" + ANSI_RESET;
+                    cardValue = ANSI_RED + card.getValue() + ANSI_RESET;
+                }
+                case("heart")  -> {
+                    suitSymbol = ANSI_RED + "♥" + ANSI_RESET;
+                    cardValue = ANSI_RED + card.getValue() + ANSI_RESET;
+                }
+                case("club")  -> {
+                    suitSymbol = ANSI_BLACK + "♣" + ANSI_BLACK;
+                    cardValue = ANSI_BLACK + card.getValue() + ANSI_RESET;
+                }
             }
+
 
             if (i == 1 && isSecondCardHidden) {
                 renderedCard.add("┌─────────┐");
@@ -98,65 +119,77 @@ public class Player {
         ArrayList<ArrayList<String>> renderedCards;
         // If dealer's first card is a 10, face card, or ace, check for natural blackjack
         if (isDealer) {
-            switch (getCardValue(0)) {
-                case "10":
-                case "J":
-                case "Q":
-                case "K": {
-                    // Peek at dealer's second card
-                    if (getCardValue(1).equals("A")) {
-                        System.out.println("\nDEALER'S HAND: " +
-                                (getHandTotal()));
-                        renderedCards = renderCards(false);
-                    } else {
-                        System.out.println("\nDEALER'S HAND: " +
-                                (getHandTotal() - convertCardValueString(getCardValue(1))));
-                        renderedCards = renderCards(true);
-                    }
-                    break;
-                }
-                case "A": {
-                    // Peek at dealer's second card
-                    switch (getCardValue(1)) {
-                        case "10":
-                        case "J":
-                        case "Q":
-                        case "K": {
+            // Hide dealer's second card if there is no natural blackjack
+            // and the user is not standing
+            if (!isUserStanding) {
+                switch (getCardValue(0)) {
+                    case "10":
+                    case "J":
+                    case "Q":
+                    case "K": {
+                        // Peek at dealer's second card if the first card is a 10 or face card
+                        // If it is natural blackjack, show both cards
+                        if (getCardValue(1).equals("A")) {
                             System.out.println("\nDEALER'S HAND: " +
                                     (getHandTotal()));
                             renderedCards = renderCards(false);
-                            break;
-                        }
-                        default: {
+                            printHand(renderedCards);
+                        } else {
                             System.out.println("\nDEALER'S HAND: " +
                                     (getHandTotal() - convertCardValueString(getCardValue(1))));
                             renderedCards = renderCards(true);
-                            break;
+                            printHand(renderedCards);
                         }
+                        break;
                     }
-                }
-                default: {
-                    // Reveal hidden card if player is standing
-                    if (isUserStanding) {
-                        System.out.println("\nDEALER'S HAND: " +
-                                (getHandTotal()));
-                        renderedCards = renderCards(false);
-                    // Keep second card hidden if player is not standing
-                    } else {
+                    case "A": {
+                        // Peek at dealer's second card if the first card is an ace
+                        // If it is natural blackjack, show both cards
+                        switch (getCardValue(1)) {
+                            case "10":
+                            case "J":
+                            case "Q":
+                            case "K": {
+                                System.out.println("\nDEALER'S HAND: " +
+                                        (getHandTotal()));
+                                renderedCards = renderCards(false);
+                                printHand(renderedCards);
+                                break;
+                            }
+                            default: {
+                                System.out.println("\nDEALER'S HAND: " +
+                                        (getHandTotal() - convertCardValueString(getCardValue(1))));
+                                renderedCards = renderCards(true);
+                                printHand(renderedCards);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    default: {
                         System.out.println("\nDEALER'S HAND: " +
                                 (getHandTotal() - convertCardValueString(getCardValue(1))));
                         renderedCards = renderCards(true);
+                        printHand(renderedCards);
+                        break;
                     }
-                    break;
                 }
+            // Show dealer's second card if user is standing
+            } else {
+                System.out.println("\nDEALER'S HAND: " +
+                        (getHandTotal()));
+                renderedCards = renderCards(false);
+                printHand(renderedCards);
             }
+        // Show both cards if the player is the user
         } else {
             System.out.println("\nYOUR HAND: " + getHandTotal());
             renderedCards = renderCards(false);
+            printHand(renderedCards);
         }
+    }
 
-
-
+    public void printHand (ArrayList<ArrayList<String>> renderedCards) {
         if (hand.size() == 2) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
                 System.out.printf("%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i));
