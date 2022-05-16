@@ -25,13 +25,13 @@ public class Deck {
         Collections.shuffle(deck, new Random());
     }
 
-    public Card getCard(int i){
-        return deck.get(i);
-    }
+//    public Card getCard(int i){
+//        return deck.get(i);
+//    }
 
-    public int getDeckSize() {
-        return deck.size();
-    }
+//    public int getDeckSize() {
+//        return deck.size();
+//    }
 
     public Card drawCard() {
         // Gets a random number between 0 and deck.size() - 1
@@ -42,8 +42,8 @@ public class Deck {
         return drawnCard;
     }
 
-    public void removeCard(int i){
-        this.deck.remove(i);
-    }
+//    public void removeCard(int i){
+//        this.deck.remove(i);
+//    }
 
 }

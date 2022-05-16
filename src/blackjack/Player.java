@@ -43,7 +43,9 @@ public class Player {
     }
 
     public void balanceToString() {
-        System.out.println("Your balance: " +  balance + " chips");
+        String ANSI_RESET = "\u001B[0m";
+        String ANSI_CYAN = "\u001B[36m";
+        System.out.println("Your balance: " + ANSI_CYAN + balance + ANSI_RESET + " chips");
     }
 
     public void drawCard(Card card) {
@@ -116,6 +118,10 @@ public class Player {
     }
 
     public void renderHand(boolean isUserStanding) {
+        String ANSI_RESET = "\u001B[0m";
+        String ANSI_YELLOW = "\u001B[33m";
+        String ANSI_CYAN = "\u001B[36m";
+
         ArrayList<ArrayList<String>> renderedCards;
         // If dealer's first card is a 10, face card, or ace, check for natural blackjack
         if (isDealer) {
@@ -130,13 +136,13 @@ public class Player {
                         // Peek at dealer's second card if the first card is a 10 or face card
                         // If it is natural blackjack, show both cards
                         if (getCardValue(1).equals("A")) {
-                            System.out.println("\nDEALER'S HAND: " +
-                                    (getHandTotal()));
+                            System.out.println(ANSI_YELLOW + "\nDEALER'S HAND: " +
+                                    (getHandTotal()) + ANSI_RESET);
                             renderedCards = renderCards(false);
                             printHand(renderedCards);
                         } else {
-                            System.out.println("\nDEALER'S HAND: " +
-                                    (getHandTotal() - convertCardValueString(getCardValue(1))));
+                            System.out.println(ANSI_YELLOW + "\nDEALER'S HAND: " +
+                                    (getHandTotal() - convertCardValueString(getCardValue(1))) + ANSI_RESET);
                             renderedCards = renderCards(true);
                             printHand(renderedCards);
                         }
@@ -150,15 +156,15 @@ public class Player {
                             case "J":
                             case "Q":
                             case "K": {
-                                System.out.println("\nDEALER'S HAND: " +
-                                        (getHandTotal()));
+                                System.out.println(ANSI_YELLOW + "\nDEALER'S HAND: " +
+                                        (getHandTotal()) + ANSI_RESET);
                                 renderedCards = renderCards(false);
                                 printHand(renderedCards);
                                 break;
                             }
                             default: {
-                                System.out.println("\nDEALER'S HAND: " +
-                                        (getHandTotal() - convertCardValueString(getCardValue(1))));
+                                System.out.println(ANSI_YELLOW + "\nDEALER'S HAND: " +
+                                        (getHandTotal() - convertCardValueString(getCardValue(1))) + ANSI_RESET);
                                 renderedCards = renderCards(true);
                                 printHand(renderedCards);
                                 break;
@@ -167,8 +173,8 @@ public class Player {
                         break;
                     }
                     default: {
-                        System.out.println("\nDEALER'S HAND: " +
-                                (getHandTotal() - convertCardValueString(getCardValue(1))));
+                        System.out.println(ANSI_YELLOW + "\nDEALER'S HAND: " +
+                                (getHandTotal() - convertCardValueString(getCardValue(1))) + ANSI_RESET);
                         renderedCards = renderCards(true);
                         printHand(renderedCards);
                         break;
@@ -176,14 +182,14 @@ public class Player {
                 }
             // Show dealer's second card if user is standing
             } else {
-                System.out.println("\nDEALER'S HAND: " +
-                        (getHandTotal()));
+                System.out.println(ANSI_YELLOW + "\nDEALER'S HAND: " +
+                        (getHandTotal()) + ANSI_RESET);
                 renderedCards = renderCards(false);
                 printHand(renderedCards);
             }
         // Show both cards if the player is the user
         } else {
-            System.out.println("\nYOUR HAND: " + getHandTotal());
+            System.out.println(ANSI_CYAN + "\nYOUR HAND: " + getHandTotal() + ANSI_RESET);
             renderedCards = renderCards(false);
             printHand(renderedCards);
         }
