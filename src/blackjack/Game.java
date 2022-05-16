@@ -163,8 +163,9 @@ public class Game {
                 bet = Integer.parseInt(userInput);
                 // User enters 0 and cashes out
                 if (bet == 0) {
-                    System.out.println(ANSI_CYAN + "\nYou " + ANSI_RESET + ANSI_GREEN + "cashed out with "
+                    System.out.println(ANSI_GREEN + "\nYou cashed out with "
                             + user.getCurrentBalance() + " chips. " + ANSI_RESET + "Goodbye!");
+                    System.exit(0);
                 // User enters a positive number that is a multiple of 5 and <= their total chips
                 } else if (bet % 5 == 0 && bet <= user.getCurrentBalance() && bet > 0) {
                     break;
@@ -227,8 +228,9 @@ public class Game {
         // Dealer reaches 21 and user does not
         } else if (dealer.getHandTotal() == 21) {
             System.out.println(ANSI_YELLOW + "\nDealer" + ANSI_RESET + " got 21. "
-                    + ANSI_YELLOW + "Dealer " + ANSI_RESET + "wins. Dealer takes "
-                    + ANSI_RED + potAmount + ANSI_RESET + " chips.");
+                    + ANSI_YELLOW + "Dealer " + ANSI_RESET + "wins. " + ANSI_YELLOW
+                    + "Dealer " + ANSI_RESET + "takes " + ANSI_RED + potAmount
+                    + ANSI_RESET + " chips.");
             isRoundOver = true;
         // User reaches 21 and dealer does not.
         } else if (user.getHandTotal() == 21) {
@@ -247,23 +249,24 @@ public class Game {
         // User busts
         } else if (dealer.getHandTotal() <= 21 && user.getHandTotal() > 21) {
             System.out.println(ANSI_CYAN + "\nYou " + ANSI_RESET + "busted! " + ANSI_YELLOW
-                    + "Dealer " + ANSI_RESET + "wins. Dealer takes " + ANSI_RED + potAmount
-                    + ANSI_RESET + " chips.");
+                    + "Dealer " + ANSI_RESET + "wins. " + ANSI_YELLOW + "Dealer " + ANSI_RESET
+                    + "takes " + ANSI_RED + potAmount + ANSI_RESET + " chips.");
             isRoundOver = true;
         // User stands and dealer stops hitting
         } else if (dealer.getHandTotal() < 21 && user.getHandTotal() < 21 && isStanding) {
             // Dealer has a higher hand value
             if (dealer.getHandTotal() > user.getHandTotal()) {
                 System.out.println(ANSI_YELLOW + "\nDealer " + ANSI_RESET + "wins, " + ANSI_YELLOW
-                        + dealer.getHandTotal() + ANSI_RESET + " to " + ANSI_CYAN
-                        + user.getHandTotal() + ANSI_RESET + ". Dealer takes " + ANSI_RED + potAmount
-                        + ANSI_RESET + " chips.");
+                        + dealer.getHandTotal() + ANSI_RESET + " to " + ANSI_CYAN + user.getHandTotal()
+                        + ANSI_RESET + ". " + ANSI_YELLOW + "Dealer " + ANSI_RESET + "takes " + ANSI_RED
+                        + potAmount + ANSI_RESET + " chips.");
                 isRoundOver = true;
             // User has a higher hand value
             } else if (dealer.getHandTotal() < user.getHandTotal()) {
                 System.out.println(ANSI_CYAN + "\nYou " + ANSI_RESET + "win, " + ANSI_CYAN
                         + user.getHandTotal() + ANSI_RESET + " to " + ANSI_YELLOW + dealer.getHandTotal()
-                        + ANSI_RESET + ". You win " + ANSI_GREEN + (potAmount * 2) + ANSI_RESET + " chips!");
+                        + ANSI_RESET + ". " + ANSI_CYAN + "You " + ANSI_RESET + "win " + ANSI_GREEN
+                        + (potAmount * 2) + ANSI_RESET + " chips!");
                 user.addToBalance(potAmount * 2);
                 isRoundOver = true;
             // Both dealer and user have equal hand value
