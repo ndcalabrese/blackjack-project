@@ -54,8 +54,8 @@ public class Player {
     ArrayList<ArrayList<String>> renderCards(boolean isSecondCardHidden) {
         ArrayList<ArrayList<String>> renderedCards = new ArrayList<>();
         String ANSI_RED = "\u001B[31m";
-        String ANSI_BLACK = "\u001B[30m";
-        String ANSI_WHITE_BG = "\u001B[47m";
+        String ANSI_BLUE = "\u001B[34m";
+        String ANSI_PURPLE = "\u001B[35m";
         String ANSI_RESET = "\u001B[0m";
 
         for (int i = 0; i < hand.size(); i++) {
@@ -66,8 +66,8 @@ public class Player {
 
             switch (card.getSuit()) {
                 case("spade")  -> {
-                    suitSymbol = ANSI_BLACK + "♠" + ANSI_RESET;
-                    cardValue = ANSI_BLACK + card.getValue() + ANSI_RESET;
+                    suitSymbol = ANSI_BLUE + "♠" + ANSI_RESET;
+                    cardValue = ANSI_BLUE + card.getValue() + ANSI_RESET;
                 }
                 case("diamond")  -> {
                     suitSymbol = ANSI_RED + "♦" + ANSI_RESET;
@@ -78,27 +78,27 @@ public class Player {
                     cardValue = ANSI_RED + card.getValue() + ANSI_RESET;
                 }
                 case("club")  -> {
-                    suitSymbol = ANSI_BLACK + "♣" + ANSI_BLACK;
-                    cardValue = ANSI_BLACK + card.getValue() + ANSI_RESET;
+                    suitSymbol = ANSI_BLUE + "♣" + ANSI_RESET;
+                    cardValue = ANSI_BLUE + card.getValue() + ANSI_RESET;
                 }
             }
 
 
             if (i == 1 && isSecondCardHidden) {
                 renderedCard.add("┌─────────┐");
-                renderedCard.add("│░░░░░░░░░│");
-                renderedCard.add("│░░░░░░░░░│");
-                renderedCard.add("│░░░░░░░░░│");
-                renderedCard.add("│░░░░░░░░░│");
-                renderedCard.add("│░░░░░░░░░│");
+                renderedCard.add("│" + ANSI_PURPLE + "░░░░░░░░░" + ANSI_RESET + "│");
+                renderedCard.add("│" + ANSI_PURPLE + "░░░░░░░░░" + ANSI_RESET + "│");
+                renderedCard.add("│" + ANSI_PURPLE + "░░░░░░░░░" + ANSI_RESET + "│");
+                renderedCard.add("│" + ANSI_PURPLE + "░░░░░░░░░" + ANSI_RESET + "│");
+                renderedCard.add("│" + ANSI_PURPLE + "░░░░░░░░░" + ANSI_RESET + "│");
                 renderedCard.add("└─────────┘");
             } else if (card.getValue().equals("10")) {
                 renderedCard.add("┌─────────┐");
-                renderedCard.add("│ 10      │");
+                renderedCard.add("│ " + cardValue + "      │");
                 renderedCard.add("│         │");
                 renderedCard.add("│    " + suitSymbol + "    │");
                 renderedCard.add("│         │");
-                renderedCard.add("│      10 │");
+                renderedCard.add("│      " + cardValue + " │");
                 renderedCard.add("└─────────┘");
             } else {
                 renderedCard.add("┌─────────┐");
