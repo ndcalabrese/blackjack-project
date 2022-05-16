@@ -96,19 +96,44 @@ public class Player {
 
     public void renderHand(boolean isUserStanding) {
         ArrayList<ArrayList<String>> renderedCards;
-        // If dealer's first card is a 10, face card, or ace,
-        // show both cards
+        // If dealer's first card is a 10, face card, or ace, check for natural blackjack
         if (isDealer) {
             switch (getCardValue(0)) {
                 case "10":
                 case "J":
                 case "Q":
-                case "K":
-                case "A": {
-                    System.out.println("\nDEALER'S HAND: " +
-                            (getHandTotal()));
-                    renderedCards = renderCards(false);
+                case "K": {
+                    // Peek at dealer's second card
+                    if (getCardValue(1).equals("A")) {
+                        System.out.println("\nDEALER'S HAND: " +
+                                (getHandTotal()));
+                        renderedCards = renderCards(false);
+                    } else {
+                        System.out.println("\nDEALER'S HAND: " +
+                                (getHandTotal() - convertCardValueString(getCardValue(1))));
+                        renderedCards = renderCards(true);
+                    }
                     break;
+                }
+                case "A": {
+                    // Peek at dealer's second card
+                    switch (getCardValue(1)) {
+                        case "10":
+                        case "J":
+                        case "Q":
+                        case "K": {
+                            System.out.println("\nDEALER'S HAND: " +
+                                    (getHandTotal()));
+                            renderedCards = renderCards(false);
+                            break;
+                        }
+                        default: {
+                            System.out.println("\nDEALER'S HAND: " +
+                                    (getHandTotal() - convertCardValueString(getCardValue(1))));
+                            renderedCards = renderCards(true);
+                            break;
+                        }
+                    }
                 }
                 default: {
                     // Reveal hidden card if player is standing
