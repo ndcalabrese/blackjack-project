@@ -40,7 +40,7 @@ public class Game {
         // Gets a random number between 0 and colorArray.length - 1
         int randomNumber = ThreadLocalRandom.current().nextInt(0, colorArray.length);
 
-        System.out.println("\n\t\t   W  E  L  C  O  M  E       T  O");
+        System.out.println("\n\t\tW  E  L  C  O  M  E       T  O");
         System.out.println(colorArray[randomNumber]);
         System.out.println("""
                  _      _               _       _               _   \s

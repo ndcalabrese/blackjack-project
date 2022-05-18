@@ -1,5 +1,6 @@
 package blackjack;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Player {
@@ -196,61 +197,63 @@ public class Player {
     }
 
     public void printHand (ArrayList<ArrayList<String>> renderedCards) {
+        PrintWriter pw = new PrintWriter(System.out, true);
+
         if (hand.size() == 2) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i));
+                pw.printf("%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i));
             }
         } else if (hand.size() == 3) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i),
+                pw.printf("%s\t%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i),
                         renderedCards.get(2).get(i));
             }
         } else if (hand.size() == 4) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i),
+                pw.printf("%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i),
                         renderedCards.get(2).get(i), renderedCards.get(3).get(i));
             }
         } else if (hand.size() == 5) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i), renderedCards.get(1).get(i),
                         renderedCards.get(2).get(i), renderedCards.get(3).get(i), renderedCards.get(4).get(i));
             }
         } else if (hand.size() == 6) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
                         renderedCards.get(1).get(i), renderedCards.get(2).get(i), renderedCards.get(3).get(i),
                         renderedCards.get(4).get(i), renderedCards.get(5).get(i));
             }
         } else if (hand.size() == 7) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
                         renderedCards.get(1).get(i), renderedCards.get(2).get(i), renderedCards.get(3).get(i),
                         renderedCards.get(4).get(i), renderedCards.get(5).get(i), renderedCards.get(6).get(i));
             }
         } else if (hand.size() == 8) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
                         renderedCards.get(1).get(i), renderedCards.get(2).get(i), renderedCards.get(3).get(i),
                         renderedCards.get(4).get(i), renderedCards.get(5).get(i), renderedCards.get(6).get(i),
                         renderedCards.get(7).get(i));
             }
         } else if (hand.size() == 9) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
                         renderedCards.get(1).get(i), renderedCards.get(2).get(i), renderedCards.get(3).get(i),
                         renderedCards.get(4).get(i), renderedCards.get(5).get(i), renderedCards.get(6).get(i),
                         renderedCards.get(7).get(i), renderedCards.get(8).get(i));
             }
         } else if (hand.size() == 10) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
                         renderedCards.get(1).get(i), renderedCards.get(2).get(i), renderedCards.get(3).get(i),
                         renderedCards.get(4).get(i), renderedCards.get(5).get(i), renderedCards.get(6).get(i),
                         renderedCards.get(7).get(i), renderedCards.get(8).get(i), renderedCards.get(9).get(i));
             }
         } else if (hand.size() == 11) {
             for (int i = 0 ; i < renderedCards.get(0).size(); i++) {
-                System.out.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
+                pw.printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", renderedCards.get(0).get(i),
                         renderedCards.get(1).get(i), renderedCards.get(2).get(i), renderedCards.get(3).get(i),
                         renderedCards.get(4).get(i), renderedCards.get(5).get(i), renderedCards.get(6).get(i),
                         renderedCards.get(7).get(i), renderedCards.get(8).get(i), renderedCards.get(9).get(i),
